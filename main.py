@@ -71,6 +71,10 @@ class User():
         self.show_profile()
         
     def follow(self, channel):
+        if channel.name in self.subscriptions:
+            print(f"{self.name} is already subscribed to {channel.name}")
+            return
+            
         channel.add_subscriber(self.name)
         self.subscriptions.add(channel.name)
         print("--------------------------------")
@@ -117,6 +121,7 @@ class Creator(User):
         self.followers = set()
         self.number_of_followers = 0
         self.number_of_twittes = 0
+        
         print("--------------------------------")
         print(f"Creator {self.name} with {self.number_of_followers} was created")
         print(f"Also have {self.number_of_twittes} number of twittes")
@@ -145,16 +150,17 @@ class Creator(User):
     def show_profile(self):
         super().show_profile()
         print(f"subscribers: {self.number_of_followers} and twittes: {self.number_of_twittes}")
-        
-        
 
-    
-    
+
+
+
+
 
 # This is test case before I public this code to GitHub 
 userIgor = User("Igor228", "Hi, I am new")
 
 creatorKira = Creator("Kira", "UWU I want to get 10 subscribers")
+userIgor.follow(creatorKira)
 userIgor.follow(creatorKira)
 
 userIgor.show_profile()
@@ -178,12 +184,3 @@ userIgor.unlike(creatorKira.content["Neal.fun added a new game on his web site!"
 userIgor.comment(creatorKira.content["Today, I found out what chairs aren't real!"], "I am agree", "This is great video, recommend to watch")
 
 creatorKira.show_all_twittes()
-
-
-
-
-
-
-        
-    
-        
