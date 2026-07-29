@@ -37,14 +37,16 @@ class Twitte():
         self.likes = 0
         self.comments = {} # title -> Comment
         
-    def show(self):
-        print("--------------------------------")
-        print(self.creator)
-        print(self.title)
-        print(self.subject)
+    def show(self, indentation=1):
+        print("----------------------------------------")
+        print((indentation - 1) * "  " + self.creator)
+        print((indentation - 1) * "  " + self.title)
+        print(indentation * "  " + self.subject)
         print(f"Likes: {self.likes}" if self.likes >= 0 else f"Dislikes: {abs(self.likes)}")
+        # print("---------------Comments-----------------")
+        
         for comment in self.comments.values():
-            comment.show()
+            comment.show(indentation + 1)
             
     def comment(self, creator, title, subject):
         self.comments[title] = Comment(creator, title, subject)
@@ -57,8 +59,8 @@ class Comment(Twitte):
     def __init__(self, creator, title, subject):
         super().__init__(creator, title, subject)
         
-    def show(self):
-        super().show()
+    def show(self, indentation):
+        super().show(indentation + 1)
 
 
 class User():
@@ -96,12 +98,12 @@ class User():
     def like(self, twitte):
         twitte.likes += 1
         print("--------------------------------")
-        print(f"Liked '{twitte.title}' now: {twitte.likes}")
+        print(f"Liked '{twitte.title}' now: {twitte.likes if twitte.likes >= 0 else -1 * twitte.likes} {'likes' if twitte.likes >= 0 else 'dislikes'}")
          
     def unlike(self, twitte):
         twitte.likes -= 1
         print("--------------------------------")
-        print(f"Unlike '{twitte.title}' now: {twitte.likes}")
+        print(f"Unlike '{twitte.title}' now: {twitte.likes if twitte.likes >= 0 else -1 * twitte.likes} {'likes' if twitte.likes >= 0 else 'dislikes'}")
     
     def show_profile(self):
         print("--------------------------------")
@@ -121,7 +123,6 @@ class Creator(User):
         self.followers = set()
         self.number_of_followers = 0
         self.number_of_twittes = 0
-        
         print("--------------------------------")
         print(f"Creator {self.name} with {self.number_of_followers} was created")
         print(f"Also have {self.number_of_twittes} number of twittes")
@@ -150,13 +151,13 @@ class Creator(User):
     def show_profile(self):
         super().show_profile()
         print(f"subscribers: {self.number_of_followers} and twittes: {self.number_of_twittes}")
+        
+        
 
+    
+    
 
-
-
-
-
-# This is test case before I public this code to GitHub 
+# This is test case before I public this code to GitHub (I already did but, it's good for test case)
 userIgor = User("Igor228", "Hi, I am new")
 
 creatorKira = Creator("Kira", "UWU I want to get 10 subscribers")
@@ -183,4 +184,7 @@ userIgor.unlike(creatorKira.content["Neal.fun added a new game on his web site!"
 
 userIgor.comment(creatorKira.content["Today, I found out what chairs aren't real!"], "I am agree", "This is great video, recommend to watch")
 
+userIgor.comment(creatorKira.content["Today, I found out what chairs aren't real!"].comments["I am agree"], "Coll video", "Cool video BTW")
+
 creatorKira.show_all_twittes()
+
