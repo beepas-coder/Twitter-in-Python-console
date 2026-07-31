@@ -1,34 +1,4 @@
-# TODO:
 
-# User class:
-# user id, name $
-# follow to $
-# unfollow to $
-# check notifications $
-# like a twitte $
-# dislike a twitte $
-# live a comment (comment object) $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-# delete a comment $$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
-# Creator class (is a child of User class):
-# add and remove followers $
-# content variable $
-# statistics: number of followers and followers, number of twittes $
-# make a twitte (twitte class) $
-# check statistics of a twitte ???????????????????????????????/
-# delete a twitte $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
-# Twitte class:
-# Creator
-# statistics: likes(negative = dislike | positive = like), comments, title, subject
-# notify followers (automatic when object is made)
-# to show content (view)
-# check comments
-
-# Comment class (is a child of Twitte class):
-
-# Twitter class (aka The scene | main class):
-# show history 
 class Twitte():
     def __init__(self, creator, title, subject):
         self.creator = creator
@@ -37,14 +7,16 @@ class Twitte():
         self.likes = 0
         self.comments = {} # title -> Comment
         
-    def show(self):
-        print("--------------------------------")
-        print(self.creator)
-        print(self.title)
-        print(self.subject)
+    def show(self, indentation=1):
+        print("----------------------------------------")
+        print((indentation - 1) * "  " + self.creator)
+        print((indentation - 1) * "  " + self.title)
+        print(indentation * "  " + self.subject)
         print(f"Likes: {self.likes}" if self.likes >= 0 else f"Dislikes: {abs(self.likes)}")
+        # print("---------------Comments-----------------")
+        
         for comment in self.comments.values():
-            comment.show()
+            comment.show(indentation + 1)
             
     def comment(self, creator, title, subject):
         self.comments[title] = Comment(creator, title, subject)
@@ -57,15 +29,15 @@ class Comment(Twitte):
     def __init__(self, creator, title, subject):
         super().__init__(creator, title, subject)
         
-    def show(self):
-        super().show()
+    def show(self, indentation):
+        super().show(indentation + 1)
 
 
 class User():
     def __init__(self, name, description):
         self.name = name
         self.description = description
-        self.subscriptions = set()
+        self.subscriptions = {} # Nickname -> Creator class
         print("--------------------------------")
         print(f"User with name {self.name}")
         self.show_profile()
@@ -76,19 +48,19 @@ class User():
             return
             
         channel.add_subscriber(self.name)
-        self.subscriptions.add(channel.name)
+        self.subscriptions[channel.name] = channel
         print("--------------------------------")
         print(f"User {self.name} followed to {channel.name}")
     
     def unfollow(self, channel):
         channel.remove_subscriber(self.name)
-        self.subscriptions.remove(channel.name)
+        self.subscriptions.pop(channel.name)
         print("--------------------------------")
         print(f"User {self.name} unfollowed from {channel.name}")
         
     def check_notifications(self):
-        for channel in self.subscriptions:
-            for content in channel:
+        for channel in self.subscriptions.values():
+            for content in channel.content.values():
                 content.show()
         print("--------------------------------")
         print(f"All notifications are checked in {self.name} account")
@@ -96,12 +68,12 @@ class User():
     def like(self, twitte):
         twitte.likes += 1
         print("--------------------------------")
-        print(f"Liked '{twitte.title}' now: {twitte.likes}")
+        print(f"Liked '{twitte.title}' now: {twitte.likes if twitte.likes >= 0 else -1 * twitte.likes} {'likes' if twitte.likes >= 0 else 'dislikes'}")
          
     def unlike(self, twitte):
         twitte.likes -= 1
         print("--------------------------------")
-        print(f"Unlike '{twitte.title}' now: {twitte.likes}")
+        print(f"Unlike '{twitte.title}' now: {twitte.likes if twitte.likes >= 0 else -1 * twitte.likes} {'likes' if twitte.likes >= 0 else 'dislikes'}")
     
     def show_profile(self):
         print("--------------------------------")
@@ -121,7 +93,6 @@ class Creator(User):
         self.followers = set()
         self.number_of_followers = 0
         self.number_of_twittes = 0
-        
         print("--------------------------------")
         print(f"Creator {self.name} with {self.number_of_followers} was created")
         print(f"Also have {self.number_of_twittes} number of twittes")
@@ -150,37 +121,51 @@ class Creator(User):
     def show_profile(self):
         super().show_profile()
         print(f"subscribers: {self.number_of_followers} and twittes: {self.number_of_twittes}")
+        
+        
+
+    
+    
+class Twitter:
+    def main():
+        # This is test case before I public this code to GitHub 
+        userIgor = User("Igor228", "Hi, I am new")
+
+        creatorKira = Creator("Kira", "UWU I want to get 10 subscribers")
+        userIgor.follow(creatorKira)
+        userIgor.follow(creatorKira)
+
+        userIgor.show_profile()
+        creatorKira.show_profile()
 
 
+        creatorKira.twitte("Today, I found out what chairs aren't real!", "I watched Vsauce video about this.")
 
+        creatorKira.twitte("Neal.fun added a new game on his web site!", "The game is kinda similar to draw a perfect circle, password game and so on. I thought it's too hard even in contexts of Neal games.")
 
+        userIgor.like(creatorKira.content["Today, I found out what chairs aren't real!"])
+        userIgor.like(creatorKira.content["Today, I found out what chairs aren't real!"])
+        userIgor.like(creatorKira.content["Today, I found out what chairs aren't real!"])
+        userIgor.like(creatorKira.content["Today, I found out what chairs aren't real!"])
+        userIgor.like(creatorKira.content["Today, I found out what chairs aren't real!"])
+        userIgor.like(creatorKira.content["Today, I found out what chairs aren't real!"])
+        userIgor.unlike(creatorKira.content["Today, I found out what chairs aren't real!"])
 
+        userIgor.unlike(creatorKira.content["Neal.fun added a new game on his web site!"])
 
-# This is test case before I public this code to GitHub 
-userIgor = User("Igor228", "Hi, I am new")
+        userIgor.comment(creatorKira.content["Today, I found out what chairs aren't real!"], "I am agree", "This is great video, recommend to watch")
 
-creatorKira = Creator("Kira", "UWU I want to get 10 subscribers")
-userIgor.follow(creatorKira)
-userIgor.follow(creatorKira)
+        userIgor.comment(creatorKira.content["Today, I found out what chairs aren't real!"].comments["I am agree"], "Coll video", "Cool video BTW")
 
-userIgor.show_profile()
-creatorKira.show_profile()
+        creatorKira.show_all_twittes()
 
+        print("The notifications are checked")
 
-creatorKira.twitte("Today, I found out what chairs aren't real!", "I watched Vsauce video about this.")
+        userIgor.check_notifications()
 
-creatorKira.twitte("Neal.fun added a new game on his web site!", "The game is kinda similar to draw a perfect circle, password game and so on. I thought it's too hard even in contexts of Neal games.")
+        userIgor.unfollow(creatorKira)
 
-userIgor.like(creatorKira.content["Today, I found out what chairs aren't real!"])
-userIgor.like(creatorKira.content["Today, I found out what chairs aren't real!"])
-userIgor.like(creatorKira.content["Today, I found out what chairs aren't real!"])
-userIgor.like(creatorKira.content["Today, I found out what chairs aren't real!"])
-userIgor.like(creatorKira.content["Today, I found out what chairs aren't real!"])
-userIgor.like(creatorKira.content["Today, I found out what chairs aren't real!"])
-userIgor.unlike(creatorKira.content["Today, I found out what chairs aren't real!"])
+        creatorKira.show_profile()
+        
 
-userIgor.unlike(creatorKira.content["Neal.fun added a new game on his web site!"])
-
-userIgor.comment(creatorKira.content["Today, I found out what chairs aren't real!"], "I am agree", "This is great video, recommend to watch")
-
-creatorKira.show_all_twittes()
+Twitter.main()
